@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>융자취급신청관리</title>
+<link rel="stylesheet" href="style.css">
+<script src="lib/xlsx.full.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="page-head">
+    <h1>융자취급신청관리 <small>UGSLT08004M01</small></h1>
+  </header>
+
+  <!-- 검색조건 -->
+  <section class="search-box">
+    <label>융자취급신청번호</label>
+    <span class="fix">SN</span>
+    <input id="sYear" class="w60" maxlength="4" placeholder="2025">
+    <span>-</span>
+    <input id="sSeq" class="w80" maxlength="6" placeholder="000001">
+    <label>구역명</label>
+    <input id="sArea" class="w160">
+    <label>신청인</label>
+    <input id="sApplicant" class="w120">
+    <label>신청일자</label>
+    <input id="sFrom" type="date"> ~ <input id="sTo" type="date">
+  </section>
+  <div class="btn-row right">
+    <button id="btnNew">신규등록 +</button>
+    <button id="btnSearchReset" title="검색조건 초기화">↻</button>
+    <button id="btnSearch" class="primary">조회</button>
+  </div>
+
+  <!-- 신청내역 목록 -->
+  <section>
+    <div class="sec-title">
+      <h2>신청내역 목록 <small>총 <b id="totalCnt">0</b>건</small></h2>
+      <button id="btnExcel" class="excel">엑셀다운로드</button>
+    </div>
+    <div class="grid-wrap">
+      <table class="grid" id="grid">
+        <thead><tr>
+          <th>순번</th><th>융자취급신청번호</th><th>융자지원결정번호</th><th>대여기관</th><th>신청구분</th>
+          <th>운용기금명</th><th>융자방식</th><th>구역명</th><th>신청인</th><th>대표자</th>
+          <th>사업기간</th><th>신청일자</th><th>신청금액</th><th>융자기간</th><th>융자번호</th><th>분할차수</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 상세 입력 -->
+  <form id="form" autocomplete="off">
+    <input type="hidden" name="id">
+    <h2 class="sub">사업장정보</h2>
+    <table class="form">
+      <tr>
+        <th class="req">사업장</th>
+        <td><input name="bizCode" class="w100"> <input name="bizName" class="w200" placeholder="사업장명"></td>
+        <th>주소</th>
+        <td><input name="bizZip" class="w60" placeholder="우편번호"> <input name="bizAddr1" class="w160"> <input name="bizAddr2" class="w160"></td>
+      </tr>
+    </table>
+
+    <h2 class="sub">신청정보</h2>
+    <table class="form">
+      <colgroup><col class="c1"><col class="c2"><col><col class="c1"><col></colgroup>
+      <tr>
+        <th class="req">운용기금</th>
+        <td colspan="2"><select name="fund"><option>주택사업특별회계</option><option>주택도시기금</option><option>도시정비기금</option></select></td>
+        <th class="req">융자취급신청일자</th>
+        <td><input type="date" name="applyDate"></td>
+      </tr>
+      <tr>
+        <th class="req">융자방식</th>
+        <td colspan="2">
+          <label class="rd"><input type="radio" name="loanType" value="신용융자" checked> 신용융자(공공관리적용구역에 한함)</label>
+          <label class="rd"><input type="radio" name="loanType" value="담보부융자"> 담보부융자</label>
+        </td>
+        <th>사업시행기간</th>
+        <td><input type="date" name="bizFrom"> ~ <input type="date" name="bizTo"></td>
+      </tr>
+      <tr>
+        <th rowspan="3">신청자</th>
+        <th class="sub-th">구역명</th>
+        <td><input name="area" class="w240"></td>
+        <th class="req">융자신청인</th>
+        <td><input name="applicantCode" class="w100" placeholder="코드"> <input name="applicant" class="w120" placeholder="성명"></td>
+      </tr>
+      <tr>
+        <th class="sub-th">주소</th>
+        <td><input name="zip" class="w60" placeholder="우편번호"> <input name="addr1" class="w120"> <input name="addr2" class="w120"></td>
+        <th>전화번호</th>
+        <td><input name="tel" class="w160" placeholder="02-111-2222"></td>
+      </tr>
+      <tr>
+        <th class="sub-th">대표자</th>
+        <td><input name="ceo" class="w120"></td>
+        <th>지방자치단체승인금액</th>
+        <td><input name="govAmt" class="w140 num"> 원 &nbsp; <span class="lbl">이미 지급받은 융자총액</span> <input name="paidAmt" class="w120 num"> 원</td>
+      </tr>
+      <tr>
+        <th>신청금액</th>
+        <th class="sub-th req">융자취급신청금액</th>
+        <td><input name="amount" class="w160 num"> 원</td>
+        <th>건축공사비여부</th>
+        <td>
+          <label class="rd"><input type="radio" name="buildCost" value="포함" checked> 포함</label>
+          <label class="rd"><input type="radio" name="buildCost" value="미포함"> 미포함</label>
+        </td>
+      </tr>
+      <tr>
+        <th class="req">융자기간</th>
+        <th class="sub-th">최초의 융자실행일로부터</th>
+        <td><input name="period" class="w60 num"> 년</td>
+        <th>계좌번호</th>
+        <td><input name="account" class="w200" placeholder="111-22-3333"></td>
+      </tr>
+      <tr>
+        <th>융자금지급계좌정보</th>
+        <th class="sub-th">은행</th>
+        <td colspan="3"><select name="bank"><option></option><option>기업은행</option><option>국민은행</option><option>신한은행</option><option>우리은행</option><option>하나은행</option><option>농협은행</option></select></td>
+      </tr>
+      <tr>
+        <th>제출서류</th>
+        <th class="sub-th">첨부파일</th>
+        <td colspan="3"><input type="file" name="file"> <span id="fileName" class="lbl"></span></td>
+      </tr>
+    </table>
+    <div class="btn-row right">
+      <button type="button" id="btnReset">초기화</button>
+      <button type="button" id="btnDelete">삭제</button>
+      <button type="submit" class="primary">저장</button>
+    </div>
+  </form>
+</div>
+<div id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
