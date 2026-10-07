@@ -1,0 +1,12 @@
+{
+  "name": "loan-app",
+  "version": "1.0.0",
+  "description": "융자취급신청관리 (UGSLT08004M01) - Node.js + SQLite",
+  "private": true,
+  "main": "server.js",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server.js",
+    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.js"
+  }
+}
